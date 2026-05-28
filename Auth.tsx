@@ -1,16 +1,12 @@
 import { useState } from "react";
-import { C, SANS, ROLES, type Role, type LayoutMode } from "./constants";
+import { C, SANS, ROLES, SIZE, type Role, type LayoutMode } from "./constants";
 import { AppLogo } from "./atoms";
+import { useSizeMode } from "./useSizeMode";
 
 // ─── AUTH / LOGIN PAGE ────────────────────────────────────
-// Layout copied faithfully from the old app: cream background, centred
-// wordmark, "Private Access", three role buttons, password field, Enter.
-// The password check is an async call to Supabase (server-side), so the
-// password never lives in the browser bundle.
-//
-// Works in both layout modes. The login screen is already a centered, fits-
-// on-one-screen card, so there's nothing to scroll — it just fills the fixed
-// iOS-PWA shell the same way it centers in a desktop window.
+// Same layout and aesthetic as before; now responsive. All dimensions come
+// from the SIZE table (desktop = refined/compact, mobile = comfortable with
+// big tap targets and 16px inputs). Desktop is unchanged from the original.
 
 const ROLE_LABEL: Record<Role, string> = {
   scout: "Scout",
@@ -25,6 +21,9 @@ export function Auth({
   signIn: (role: Role, password: string) => Promise<{ ok: boolean; message?: string }>;
   mode: LayoutMode;
 }) {
+  const sizeMode = useSizeMode();
+  const sz = SIZE[sizeMode];
+
   const [role, setRole] = useState<Role>("manager");
   const [pw, setPw] = useState("");
   const [err, setErr] = useState(false);
@@ -39,14 +38,11 @@ export function Auth({
       setErr(true);
       setBusy(false);
     }
-    // On success the app re-renders into the role view; no further action.
   };
 
   return (
     <div
       style={{
-        // Fill whatever the Shell gives us and center the card. In ios-pwa
-        // the Shell is already a fixed 100dvh box; flex:1 makes us fill it.
         flex: 1,
         minHeight: mode === "desktop" ? "100vh" : undefined,
         display: "flex",
@@ -55,22 +51,22 @@ export function Auth({
         fontFamily: SANS,
       }}
     >
-      <div style={{ width: 300, textAlign: "center", padding: "0 16px" }}>
+      <div style={{ width: sz.cardWidth, maxWidth: "92vw", textAlign: "center", padding: "0 16px", boxSizing: "border-box" }}>
         <div style={{ marginBottom: 6 }}>
-          <AppLogo size="auth" />
+          <AppLogo size="auth" wordmarkSize={sz.logoWordmark} studioSize={sz.logoStudio} />
         </div>
-        <p style={{ fontSize: 9, color: C.muted, letterSpacing: "0.14em", textTransform: "uppercase", margin: "0 0 28px" }}>
+        <p style={{ fontSize: sz.accessLabel, color: C.muted, letterSpacing: "0.14em", textTransform: "uppercase", margin: "0 0 28px" }}>
           Private Access
         </p>
 
-        <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+        <div style={{ display: "flex", gap: sz.gap, marginBottom: 20 }}>
           {ROLES.map((r) => {
             const sel = role === r;
             return (
               <button
                 key={r}
                 onClick={() => setRole(r)}
-                style={{ flex: 1, padding: "9px 0", border: `1px solid ${sel ? C.black : C.rule}`, background: sel ? C.black : C.bg, color: sel ? C.white : C.muted, cursor: "pointer", fontFamily: SANS, fontSize: 9, letterSpacing: "0.1em", textTransform: "uppercase", borderRadius: 2 }}
+                style={{ flex: 1, height: sz.tapTarget, border: `1px solid ${sel ? C.black : C.rule}`, background: sel ? C.black : C.bg, color: sel ? C.white : C.muted, cursor: "pointer", fontFamily: SANS, fontSize: sz.btnText, letterSpacing: "0.1em", textTransform: "uppercase", borderRadius: 2 }}
               >
                 {ROLE_LABEL[r]}
               </button>
@@ -84,15 +80,15 @@ export function Auth({
           value={pw}
           onChange={(e) => { setPw(e.target.value); setErr(false); }}
           onKeyDown={(e) => e.key === "Enter" && go()}
-          style={{ width: "100%", padding: "10px 14px", border: `1px solid ${err ? C.red : C.rule}`, background: C.bg, fontFamily: SANS, fontSize: 12, color: C.black, borderRadius: 2, outline: "none", boxSizing: "border-box", marginBottom: 8 }}
+          style={{ width: "100%", height: sz.tapTarget, padding: sz.inputPad, border: `1px solid ${err ? C.red : C.rule}`, background: C.bg, fontFamily: SANS, fontSize: sz.inputText, color: C.black, borderRadius: 2, outline: "none", boxSizing: "border-box", marginBottom: 8 }}
         />
 
-        {err && <p style={{ fontSize: 10, color: C.red, margin: "0 0 8px" }}>Incorrect password</p>}
+        {err && <p style={{ fontSize: sz.bodyText, color: C.red, margin: "0 0 8px" }}>Incorrect password</p>}
 
         <button
           onClick={go}
           disabled={busy || !pw}
-          style={{ width: "100%", padding: 10, background: busy || !pw ? C.rule : C.black, color: busy || !pw ? C.muted : C.white, border: "none", borderRadius: 2, cursor: busy || !pw ? "default" : "pointer", fontFamily: SANS, fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase" }}
+          style={{ width: "100%", height: sz.tapTarget, background: busy || !pw ? C.rule : C.black, color: busy || !pw ? C.muted : C.white, border: "none", borderRadius: 2, cursor: busy || !pw ? "default" : "pointer", fontFamily: SANS, fontSize: sz.primaryText, letterSpacing: "0.14em", textTransform: "uppercase" }}
         >
           {busy ? "…" : "Enter"}
         </button>

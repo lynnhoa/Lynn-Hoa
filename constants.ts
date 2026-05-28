@@ -72,3 +72,79 @@ export const LAYOUT = {
     desktop: "auto" as const,
   },
 } as const;
+
+// ─── RESPONSIVE SIZING ────────────────────────────────────
+// IMPORTANT: this is a SEPARATE question from layout mode above.
+//   • layout mode  = "is this a fixed iOS-PWA screen?" (scroll behavior)
+//   • size mode    = "is this a small screen?"          (how big to draw things)
+// A phone in a normal Safari tab is layout "desktop" but size "mobile" — it
+// still needs big touch targets. So sizing keys off viewport WIDTH, not the
+// PWA flag.
+
+export type SizeMode = "mobile" | "desktop";
+
+// Phones and small screens get the comfortable, tappable sizing.
+export const MOBILE_BREAKPOINT = 700;
+
+export function detectSizeMode(): SizeMode {
+  if (typeof window === "undefined") return "desktop";
+  return window.innerWidth < MOBILE_BREAKPOINT ? "mobile" : "desktop";
+}
+
+// One sizing table the whole app reads. Desktop values are the original,
+// refined look — unchanged. Mobile values are "comfortable": bigger type,
+// ≥44px touch targets (Apple's minimum), 16px inputs (which also stops iOS
+// from auto-zooming when a field is focused), and fuller width.
+//
+// Usage in a component:
+//   const sz = SIZE[sizeMode];
+//   <button style={{ height: sz.tapTarget, fontSize: sz.btnText }}>
+//
+// Add new tokens here as screens need them — every screen stays consistent
+// because they all read from this one place.
+export const SIZE = {
+  desktop: {
+    // Auth / login
+    cardWidth: 300,          // login card width
+    logoWordmark: 26,        // "Lynn Hoa"
+    logoStudio: 8,           // "Studio"
+    accessLabel: 9,          // "Private Access"
+    // Controls
+    tapTarget: 38,           // button / input height
+    btnText: 9,              // role button label
+    inputText: 12,           // text field
+    inputPad: "10px 14px",
+    primaryText: 10,         // Enter / primary button label
+    // Body / headings
+    h2: 20,
+    pageTitle: 28,           // "Manager View"
+    bodyText: 11,
+    gap: 8,                  // gap between role buttons
+    // Nav
+    navHeight: 56,
+    avatar: 30,
+    contentPad: "40px 20px",
+  },
+  mobile: {
+    // Auth / login — wordmark stays airy (branding), controls grow more.
+    cardWidth: 340,          // wider — uses more of a ~390px screen
+    logoWordmark: 32,
+    logoStudio: 9,
+    accessLabel: 11,
+    // Controls — comfortable, easily tappable.
+    tapTarget: 50,           // ≥44px Apple minimum, with margin
+    btnText: 12,
+    inputText: 16,           // 16px = no iOS focus-zoom
+    inputPad: "14px 16px",
+    primaryText: 13,
+    // Body / headings
+    h2: 23,
+    pageTitle: 30,
+    bodyText: 14,
+    gap: 10,
+    // Nav
+    navHeight: 60,
+    avatar: 38,
+    contentPad: "32px 18px",
+  },
+} as const;
