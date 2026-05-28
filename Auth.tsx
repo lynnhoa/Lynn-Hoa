@@ -51,7 +51,7 @@ export function Auth({
         fontFamily: SANS,
       }}
     >
-      <div style={{ width: sz.cardWidth, maxWidth: "92vw", textAlign: "center", padding: "0 16px", boxSizing: "border-box" }}>
+      <div style={{ width: sz.cardWidth ?? "100%", maxWidth: sz.cardWidth ?? 420, textAlign: "center", padding: `0 ${sz.cardGutter}px`, boxSizing: "border-box" }}>
         <div style={{ marginBottom: 6 }}>
           <AppLogo size="auth" wordmarkSize={sz.logoWordmark} studioSize={sz.logoStudio} />
         </div>
@@ -66,7 +66,7 @@ export function Auth({
               <button
                 key={r}
                 onClick={() => setRole(r)}
-                style={{ flex: 1, height: sz.tapTarget, border: `1px solid ${sel ? C.black : C.rule}`, background: sel ? C.black : C.bg, color: sel ? C.white : C.muted, cursor: "pointer", fontFamily: SANS, fontSize: sz.btnText, letterSpacing: "0.1em", textTransform: "uppercase", borderRadius: 2 }}
+                style={{ flex: 1, height: sz.tapTarget, border: `1px solid ${sel ? C.black : C.rule}`, background: sel ? C.black : C.bg, color: sel ? C.white : C.muted, cursor: "pointer", fontFamily: SANS, fontSize: sz.btnText, letterSpacing: "0.12em", textTransform: "uppercase", borderRadius: 2 }}
               >
                 {ROLE_LABEL[r]}
               </button>

@@ -106,6 +106,7 @@ export const SIZE = {
   desktop: {
     // Auth / login
     cardWidth: 300,          // login card width
+    cardGutter: 16,
     logoWordmark: 26,        // "Lynn Hoa"
     logoStudio: 8,           // "Studio"
     accessLabel: 9,          // "Private Access"
@@ -126,25 +127,27 @@ export const SIZE = {
     contentPad: "40px 20px",
   },
   mobile: {
-    // Auth / login — wordmark stays airy (branding), controls grow more.
-    cardWidth: 340,          // wider — uses more of a ~390px screen
-    logoWordmark: 32,
-    logoStudio: 9,
-    accessLabel: 11,
-    // Controls — comfortable, easily tappable.
-    tapTarget: 50,           // ≥44px Apple minimum, with margin
-    btnText: 12,
+    // Auth / login — the card fills the screen width (with side gutters) so
+    // it feels native, not like a narrow shrunk-down desktop column.
+    cardWidth: null,         // null = full width minus gutters (see Auth)
+    cardGutter: 20,          // breathing room on each side
+    logoWordmark: 30,        // refined, not oversized
+    logoStudio: 8,
+    accessLabel: 10,
+    // Controls — tappable but elegantly proportioned (44px, not chunky).
+    tapTarget: 44,           // Apple minimum, no more — keeps it sleek
+    btnText: 11,
     inputText: 16,           // 16px = no iOS focus-zoom
-    inputPad: "14px 16px",
-    primaryText: 13,
+    inputPad: "12px 16px",
+    primaryText: 11.5,
     // Body / headings
-    h2: 23,
-    pageTitle: 30,
-    bodyText: 14,
-    gap: 10,
+    h2: 22,
+    pageTitle: 29,
+    bodyText: 13,
+    gap: 9,
     // Nav
-    navHeight: 60,
-    avatar: 38,
-    contentPad: "32px 18px",
+    navHeight: 56,
+    avatar: 36,
+    contentPad: "32px 20px",
   },
 } as const;
