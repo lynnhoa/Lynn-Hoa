@@ -112,7 +112,7 @@ export function RoleLayout({
                     {ROLE_LABEL[role]} · Private
                   </p>
                 </div>
-                <div style={{ padding: "8px 16px 4px" }}>
+                <div style={{ padding: "8px 16px 3px" }}>
                   <p style={{ fontSize: 8, color: C.light, margin: 0, letterSpacing: "0.1em", textTransform: "uppercase" }}>Switch mode</p>
                 </div>
                 {ROLES.map((r) => {
@@ -122,14 +122,14 @@ export function RoleLayout({
                       key={r}
                       disabled={isCurrent || switching}
                       onClick={() => { if (!isCurrent) doSwitch(r); }}
-                      style={{ ...menuItemStyle, color: isCurrent ? C.light : C.black, cursor: isCurrent ? "default" : "pointer", justifyContent: "space-between" }}
+                      style={{ ...menuItemStyle, padding: "7px 16px", color: isCurrent ? C.light : C.black, cursor: isCurrent ? "default" : "pointer", justifyContent: "space-between" }}
                     >
                       <span>{ROLE_LABEL[r]}</span>
                       {isCurrent && <span style={{ fontSize: 8, color: C.light, letterSpacing: "0.08em", textTransform: "uppercase" }}>current</span>}
                     </button>
                   );
                 })}
-                <div style={{ borderTop: `1px solid ${C.rule}` }} />
+                <div style={{ borderTop: `1px solid ${C.rule}`, marginTop: 5 }} />
                 <button onClick={() => { setMenuOpen(false); setPwOpen(true); }} style={{ ...menuItemStyle, color: C.muted }}>
                   Change Password
                 </button>
