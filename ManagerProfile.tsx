@@ -176,19 +176,34 @@ export function ManagerProfile() {
             <p style={{ fontSize: t.body, color: C.light, margin: "5px 0 0" }}>Appears on every invoice PDF.</p>
           </div>
 
+          {/* Desktop: Save lives INSIDE the card, divider above, right-aligned */}
+          {!mobile && (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 18, marginTop: 22, paddingTop: 18, borderTop: `1px solid ${C.rule}` }}>
+              <span style={{ fontSize: t.body, display: "flex", alignItems: "center", gap: 6, color: msg ? (msg.ok ? C.green : C.red) : dirty ? C.amber : C.light }}>
+                {msg ? msg.text : dirty ? "Unsaved changes" : loaded ? "All changes saved" : "Loading…"}
+              </span>
+              <button onClick={onSave} disabled={saving || !dirty}
+                style={{ background: saving || !dirty ? C.rule : C.black, color: saving || !dirty ? C.muted : C.white, border: "none", borderRadius: 2, padding: "11px 26px", fontSize: t.button, letterSpacing: "0.14em", textTransform: "uppercase", cursor: saving || !dirty ? "default" : "pointer", fontFamily: SANS, whiteSpace: "nowrap" }}>
+                {saving ? "Saving…" : "Save"}
+              </button>
+            </div>
+          )}
+
         </div>
       </div>
 
-      {/* Pinned save bar */}
-      <div style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "13px 22px", borderTop: `1px solid ${C.rule}`, background: "rgba(0,0,0,0.015)" }}>
-        <span style={{ fontSize: t.body, display: "flex", alignItems: "center", gap: 6, color: msg ? (msg.ok ? C.green : C.red) : dirty ? C.amber : C.light }}>
-          {msg ? msg.text : dirty ? "Unsaved changes" : loaded ? "All changes saved" : "Loading…"}
-        </span>
-        <button onClick={onSave} disabled={saving || !dirty}
-          style={{ background: saving || !dirty ? C.rule : C.black, color: saving || !dirty ? C.muted : C.white, border: "none", borderRadius: 2, padding: "11px 26px", fontSize: t.button, letterSpacing: "0.14em", textTransform: "uppercase", cursor: saving || !dirty ? "default" : "pointer", fontFamily: SANS, whiteSpace: "nowrap" }}>
-          {saving ? "Saving…" : "Save"}
-        </button>
-      </div>
+      {/* Mobile: keep the pinned full-width save bar at the bottom of the screen */}
+      {mobile && (
+        <div style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "13px 22px", borderTop: `1px solid ${C.rule}`, background: "rgba(0,0,0,0.015)" }}>
+          <span style={{ fontSize: t.body, display: "flex", alignItems: "center", gap: 6, color: msg ? (msg.ok ? C.green : C.red) : dirty ? C.amber : C.light }}>
+            {msg ? msg.text : dirty ? "Unsaved changes" : loaded ? "All changes saved" : "Loading…"}
+          </span>
+          <button onClick={onSave} disabled={saving || !dirty}
+            style={{ background: saving || !dirty ? C.rule : C.black, color: saving || !dirty ? C.muted : C.white, border: "none", borderRadius: 2, padding: "11px 26px", fontSize: t.button, letterSpacing: "0.14em", textTransform: "uppercase", cursor: saving || !dirty ? "default" : "pointer", fontFamily: SANS, whiteSpace: "nowrap" }}>
+            {saving ? "Saving…" : "Save"}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
