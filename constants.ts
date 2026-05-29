@@ -135,7 +135,7 @@ export const SIZE = {
     bodyText: 11,
     gap: 8,                  // gap between role buttons
     // Nav
-    navHeight: 56,
+    navHeight: 64,
     avatar: 30,
     contentPad: "40px 20px",
     // Tab row (the centered second level beneath the logo). Uppercase Lato.
@@ -163,7 +163,7 @@ export const SIZE = {
     bodyText: 13,
     gap: 9,
     // Nav
-    navHeight: 56,
+    navHeight: 61,
     avatar: 36,
     contentPad: "32px 20px",
     // Tab row — distributed full-width within side padding on phones / PWA.

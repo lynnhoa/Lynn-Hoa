@@ -163,7 +163,7 @@ export function RoleLayout({
             )}
           </div>
           <div style={{ textAlign: "center" }}>
-            <AppLogo size="web" wordmarkSize={sizeMode === "mobile" ? 26 : 28} studioSize={sizeMode === "mobile" ? 7.5 : 8} />
+            <AppLogo size="web" wordmarkSize={sizeMode === "mobile" ? 28 : 30} studioSize={sizeMode === "mobile" ? 8 : 9} />
           </div>
           <div />
         </div>
