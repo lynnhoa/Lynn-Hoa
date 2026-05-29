@@ -172,3 +172,49 @@ export const SIZE = {
     tabGap: 8,
   },
 } as const;
+
+// ─── TYPE SCALE ───────────────────────────────────────────
+// Named typography levels for content screens (forms, detail views). This is
+// the single source of truth for text sizing inside pages — read TYPE[mode].x
+// instead of hardcoding numbers, so every screen stays consistent and a tweak
+// here updates the whole app.
+//
+// Desktop values are the "in-between" scale chosen from the Creator Profile
+// mockup — comfortably readable without losing the refined look. Mobile keeps
+// input at 16px (prevents iOS focus-zoom) and is otherwise tuned for phones.
+//
+// Levels:
+//   title    — screen / page title (Playfair)
+//   heading  — sub-section header (uppercase)
+//   label    — field label (uppercase)
+//   input    — field text / values
+//   body     — hints, helper text
+//   button   — buttons, tabs, back
+//   micro    — badges, captions, "current"
+//   fieldH   — input box height (paired with `input` so text has room)
+export const TYPE = {
+  desktop: {
+    title:   29,
+    heading: 11,
+    label:   11,
+    input:   13.5,
+    body:    11.5,
+    button:  10.5,
+    micro:   9,
+    fieldH:  40,
+    inputPad: "0 13px",
+    areaPad:  "10px 13px",
+  },
+  mobile: {
+    title:   27,
+    heading: 11,
+    label:   11,
+    input:   16,        // 16px = no iOS focus-zoom
+    body:    12,
+    button:  11,
+    micro:   9,
+    fieldH:  46,        // taller for comfortable tapping
+    inputPad: "0 14px",
+    areaPad:  "12px 14px",
+  },
+} as const;
