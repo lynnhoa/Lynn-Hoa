@@ -16,8 +16,13 @@ if (!url || !anonKey) {
 
 export const supabase = createClient(url, anonKey, {
   auth: {
+    // Stay logged in across app/browser closes. The session is written to
+    // localStorage and silently refreshed before its token expires, so the
+    // user only ever logs out by tapping Log Out.
     persistSession: true,
     autoRefreshToken: true,
+    storage: typeof window !== "undefined" ? window.localStorage : undefined,
+    storageKey: "lynnhoa-auth",
     detectSessionInUrl: false,
   },
 });
