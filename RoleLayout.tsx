@@ -8,6 +8,13 @@ import type { ChangeResult } from "./useAuth";
 
 type SwitchResult = { ok: boolean; needsPassword?: boolean; message?: string };
 
+// Optional account-menu items that open in a Modal. Used by Manager for
+// Creator Profile and Service Catalog; other roles pass nothing.
+export type MenuExtra = {
+  label: string;
+  Component: ComponentType;
+};
+
 // ─── ROLE LAYOUT ──────────────────────────────────────────
 // The shared frame every role page wears. It owns everything that is
 // IDENTICAL across scout / manager / creator:
@@ -36,6 +43,7 @@ export function RoleLayout({
   onSignOut,
   changePassword,
   switchRole,
+  menuExtras = [],
 }: {
   role: Role;
   tabs: TabDef[];
@@ -43,6 +51,7 @@ export function RoleLayout({
   onSignOut: () => void;
   changePassword: (current: string, next: string) => Promise<ChangeResult>;
   switchRole: (target: Role, password?: string) => Promise<SwitchResult>;
+  menuExtras?: MenuExtra[];
 }) {
   const sizeMode = useSizeMode();
   const sz = SIZE[sizeMode];
@@ -55,6 +64,8 @@ export function RoleLayout({
   const [switchPw, setSwitchPw] = useState("");
   const [switchErr, setSwitchErr] = useState(false);
   const [switching, setSwitching] = useState(false);
+  // Which menu-extra modal (Creator Profile / Service Catalog) is open, by index.
+  const [extraOpen, setExtraOpen] = useState<number | null>(null);
 
   const doSwitch = async (target: Role, password?: string) => {
     setSwitching(true);
@@ -130,6 +141,16 @@ export function RoleLayout({
                   );
                 })}
                 <div style={{ borderTop: `1px solid ${C.rule}`, marginTop: 5 }} />
+                {menuExtras.map((ex, i) => (
+                  <button
+                    key={ex.label}
+                    onClick={() => { setMenuOpen(false); setExtraOpen(i); }}
+                    style={{ ...menuItemStyle, color: C.muted }}
+                  >
+                    {ex.label}
+                  </button>
+                ))}
+                {menuExtras.length > 0 && <div style={{ borderTop: `1px solid ${C.rule}` }} />}
                 <button onClick={() => { setMenuOpen(false); setPwOpen(true); }} style={{ ...menuItemStyle, color: C.muted }}>
                   Change Password
                 </button>
@@ -189,6 +210,18 @@ export function RoleLayout({
       <Modal open={pwOpen} onClose={() => setPwOpen(false)} title="Account">
         <ChangePassword changePassword={changePassword} />
       </Modal>
+
+      {/* ── Menu extras (Manager: Creator Profile / Service Catalog) ── */}
+      {menuExtras.map((ex, i) => {
+        const ExtraComponent = ex.Component;
+        return (
+          <Modal key={ex.label} open={extraOpen === i} onClose={() => setExtraOpen(null)} title={ex.label}>
+            <div style={{ minHeight: 220, display: "flex", flexDirection: "column" }}>
+              <ExtraComponent />
+            </div>
+          </Modal>
+        );
+      })}
 
       {/* ── Switch-mode password prompt (only when cache was cleared) ── */}
       <Modal open={switchTarget !== null} onClose={() => { setSwitchTarget(null); setSwitchPw(""); setSwitchErr(false); }} title={`Switch to ${switchTarget ? ROLE_LABEL[switchTarget] : ""}`}>
