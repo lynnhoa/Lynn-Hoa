@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { C, SANS, SIZE } from "./constants";
+import { C, SANS, TYPE } from "./constants";
 import { useSizeMode } from "./useSizeMode";
 import { useProfile, EMPTY_PROFILE, type Profile } from "./useProfile";
 
@@ -9,12 +9,13 @@ import { useProfile, EMPTY_PROFILE, type Profile } from "./useProfile";
 // Back + title header above this). This component is the scrolling body plus a
 // pinned Save bar.
 //
-// Nothing auto-saves. Edits mark the form "dirty"; only tapping Save writes to
-// Supabase. Placeholders are generic Mustermann-style examples — never real
-// data; real values come only from what's typed and saved.
+// All text sizing comes from the TYPE scale (one source of truth), so it
+// matches the approved mockup and stays consistent with future screens.
+// Nothing auto-saves — only tapping Save writes to Supabase. Placeholders are
+// generic Mustermann-style examples, never real data.
 
 export function ManagerProfile() {
-  const sz = SIZE[useSizeMode()];
+  const t = TYPE[useSizeMode()];
   const { loaded, profile, save } = useProfile();
 
   const [form, setForm] = useState<Profile>(EMPTY_PROFILE);
@@ -53,41 +54,41 @@ export function ManagerProfile() {
   };
 
   const field = {
-    width: "100%", height: sz.tapTarget, padding: sz.inputPad,
+    width: "100%", height: t.fieldH, padding: t.inputPad,
     border: `1px solid ${C.rule}`, background: C.bg, fontFamily: SANS,
-    fontSize: sz.inputText, color: C.black, borderRadius: 2, outline: "none",
+    fontSize: t.input, color: C.black, borderRadius: 2, outline: "none",
     boxSizing: "border-box" as const,
   };
   const labelStyle = {
-    fontSize: 10, color: C.muted, letterSpacing: "0.06em",
+    fontSize: t.label, color: C.muted, letterSpacing: "0.06em",
     textTransform: "uppercase" as const, margin: "0 0 5px", display: "block",
   };
   const F = ({ label, k, placeholder, type = "text" }: { label: string; k: keyof Profile; placeholder: string; type?: string }) => (
-    <div style={{ marginBottom: 12 }}>
+    <div style={{ marginBottom: 13 }}>
       <label style={labelStyle}>{label}</label>
       <input type={type} value={form[k] as string} placeholder={placeholder}
         onChange={(e) => set(k, e.target.value)} style={field} />
     </div>
   );
   const Sec = ({ title }: { title: string }) => (
-    <p style={{ fontSize: 10, color: C.light, letterSpacing: "0.1em", textTransform: "uppercase", margin: "24px 0 12px", paddingBottom: 6, borderBottom: `1px solid ${C.rule}` }}>{title}</p>
+    <p style={{ fontSize: t.heading, color: C.light, letterSpacing: "0.1em", textTransform: "uppercase", margin: "24px 0 12px", paddingBottom: 6, borderBottom: `1px solid ${C.rule}` }}>{title}</p>
   );
 
   const ku = form.kleinunternehmer;
 
   return (
     <div style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
-      <div style={{ flex: 1, overflowY: "auto", padding: "20px", boxSizing: "border-box" }}>
-        <div style={{ maxWidth: 760, margin: "0 auto" }}>
+      <div style={{ flex: 1, overflowY: "auto", padding: "24px 20px", boxSizing: "border-box" }}>
+        <div style={{ maxWidth: 780, margin: "0 auto" }}>
 
           <Sec title="Brand" />
-          <div style={{ display: "flex", alignItems: "center", gap: 14, padding: 14, border: `1px dashed ${C.rule}`, borderRadius: 6 }}>
-            <div style={{ width: 50, height: 50, borderRadius: 6, background: C.white, border: `1px solid ${C.rule}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Playfair Display',Georgia,serif", fontSize: 16, color: C.black }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 15, padding: 15, border: `1px dashed ${C.rule}`, borderRadius: 8 }}>
+            <div style={{ width: 52, height: 52, borderRadius: 8, background: C.white, border: `1px solid ${C.rule}`, display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Playfair Display',Georgia,serif", fontSize: 17, color: C.black }}>
               {(form.company || form.name) ? (form.company || form.name).slice(0, 2).toUpperCase() : "—"}
             </div>
             <div>
-              <button disabled style={{ fontSize: 11, color: C.muted, border: `1px solid ${C.rule}`, borderRadius: 6, padding: "7px 13px", background: "transparent", cursor: "not-allowed" }}>Upload logo</button>
-              <p style={{ fontSize: 10.5, color: C.light, margin: "6px 0 0", lineHeight: 1.5 }}>Shown on invoices &amp; PDFs. Optional. (Coming soon.)</p>
+              <button disabled style={{ fontSize: t.body, color: C.muted, border: `1px solid ${C.rule}`, borderRadius: 8, padding: "8px 14px", background: "transparent", cursor: "not-allowed" }}>Upload logo</button>
+              <p style={{ fontSize: t.body, color: C.light, margin: "6px 0 0", lineHeight: 1.5 }}>Shown on invoices &amp; PDFs. Optional. (Coming soon.)</p>
             </div>
           </div>
 
@@ -98,7 +99,7 @@ export function ManagerProfile() {
 
           <Sec title="Address" />
           <F label="Street & number" k="street" placeholder="Musterstraße 1" />
-          <div style={{ display: "grid", gridTemplateColumns: "110px 1fr", gap: 9 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "120px 1fr", gap: 11 }}>
             <F label="PLZ" k="plz" placeholder="10115" />
             <F label="City" k="city" placeholder="Musterstadt" />
           </div>
@@ -111,26 +112,26 @@ export function ManagerProfile() {
           <Sec title="Banking" />
           <F label="Bank" k="bank_name" placeholder="Musterbank" />
           <F label="IBAN" k="iban" placeholder="DE00 0000 0000 0000 0000 00" />
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 9 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 11 }}>
             <F label="BIC" k="bic" placeholder="ABCDDEFFXXX" />
             <F label="PayPal · optional" k="paypal_email" placeholder="pay@musterstudio.com" />
           </div>
 
           <Sec title="Tax" />
-          <div style={{ marginBottom: 12 }}>
+          <div style={{ marginBottom: 13 }}>
             <label style={labelStyle}>Kleinunternehmer · §19 UStG</label>
             <div style={{ display: "flex", gap: 8, marginTop: 2 }}>
               {([["Yes", true], ["No", false]] as [string, boolean][]).map(([lbl, val]) => {
                 const on = ku === val;
                 return (
                   <button key={lbl} onClick={() => setKU(val)}
-                    style={{ padding: "8px 18px", border: `1px solid ${on ? C.black : C.rule}`, background: on ? C.black : C.bg, color: on ? C.white : C.muted, cursor: "pointer", fontFamily: SANS, fontSize: 9.5, letterSpacing: "0.08em", textTransform: "uppercase", borderRadius: 2 }}>
+                    style={{ padding: "9px 18px", border: `1px solid ${on ? C.black : C.rule}`, background: on ? C.black : C.bg, color: on ? C.white : C.muted, cursor: "pointer", fontFamily: SANS, fontSize: t.micro, letterSpacing: "0.08em", textTransform: "uppercase", borderRadius: 2 }}>
                     {lbl}
                   </button>
                 );
               })}
             </div>
-            <p style={{ fontSize: 10.5, color: C.muted, margin: "7px 0 0", lineHeight: 1.5 }}>
+            <p style={{ fontSize: t.body, color: C.muted, margin: "7px 0 0", lineHeight: 1.5 }}>
               {ku ? "No VAT charged on invoices." : "VAT is charged on invoices."}
             </p>
           </div>
@@ -140,14 +141,14 @@ export function ManagerProfile() {
           {!ku && (
             <>
               <F label="VAT ID · USt-IdNr." k="ust_id_nr" placeholder="DE123456789" />
-              <div style={{ marginBottom: 12 }}>
+              <div style={{ marginBottom: 13 }}>
                 <label style={labelStyle}>VAT rate</label>
                 <div style={{ display: "flex", gap: 8, marginTop: 2 }}>
                   {["19", "7"].map((r) => {
                     const on = form.vat_rate === r;
                     return (
                       <button key={r} onClick={() => set("vat_rate", r)}
-                        style={{ padding: "8px 18px", border: `1px solid ${on ? C.black : C.rule}`, background: on ? C.black : C.bg, color: on ? C.white : C.muted, cursor: "pointer", fontFamily: SANS, fontSize: 9.5, letterSpacing: "0.08em", textTransform: "uppercase", borderRadius: 2 }}>
+                        style={{ padding: "9px 18px", border: `1px solid ${on ? C.black : C.rule}`, background: on ? C.black : C.bg, color: on ? C.white : C.muted, cursor: "pointer", fontFamily: SANS, fontSize: t.micro, letterSpacing: "0.08em", textTransform: "uppercase", borderRadius: 2 }}>
                         {r === "19" ? "19 % (standard)" : "7 % (reduced)"}
                       </button>
                     );
@@ -157,24 +158,24 @@ export function ManagerProfile() {
             </>
           )}
 
-          <div style={{ marginBottom: 12 }}>
+          <div style={{ marginBottom: 13 }}>
             <label style={labelStyle}>Invoice tax note</label>
             <textarea value={form.tax_note} placeholder={ku ? "Gemäß § 19 UStG wird keine Umsatzsteuer berechnet." : "zzgl. 19 % MwSt"}
               onChange={(e) => set("tax_note", e.target.value)}
               rows={2}
-              style={{ ...field, height: "auto", padding: "10px 12px", lineHeight: 1.5, resize: "vertical" as const, fontFamily: SANS }} />
-            <p style={{ fontSize: 10, color: C.light, margin: "5px 0 0" }}>Appears on every invoice PDF.</p>
+              style={{ ...field, height: "auto", padding: t.areaPad, lineHeight: 1.5, resize: "vertical" as const, fontFamily: SANS }} />
+            <p style={{ fontSize: t.body, color: C.light, margin: "5px 0 0" }}>Appears on every invoice PDF.</p>
           </div>
 
         </div>
       </div>
 
-      <div style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "12px 18px", borderTop: `1px solid ${C.rule}`, background: "rgba(0,0,0,0.015)" }}>
-        <span style={{ fontSize: 10.5, display: "flex", alignItems: "center", gap: 6, color: msg ? (msg.ok ? C.green : C.red) : dirty ? C.amber : C.light }}>
+      <div style={{ flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "13px 22px", borderTop: `1px solid ${C.rule}`, background: "rgba(0,0,0,0.015)" }}>
+        <span style={{ fontSize: t.body, display: "flex", alignItems: "center", gap: 6, color: msg ? (msg.ok ? C.green : C.red) : dirty ? C.amber : C.light }}>
           {msg ? msg.text : dirty ? "Unsaved changes" : loaded ? "All changes saved" : "Loading…"}
         </span>
         <button onClick={onSave} disabled={saving || !dirty}
-          style={{ background: saving || !dirty ? C.rule : C.black, color: saving || !dirty ? C.muted : C.white, border: "none", borderRadius: 2, padding: "10px 24px", fontSize: 10, letterSpacing: "0.14em", textTransform: "uppercase", cursor: saving || !dirty ? "default" : "pointer", fontFamily: SANS, whiteSpace: "nowrap" }}>
+          style={{ background: saving || !dirty ? C.rule : C.black, color: saving || !dirty ? C.muted : C.white, border: "none", borderRadius: 2, padding: "11px 26px", fontSize: t.button, letterSpacing: "0.14em", textTransform: "uppercase", cursor: saving || !dirty ? "default" : "pointer", fontFamily: SANS, whiteSpace: "nowrap" }}>
           {saving ? "Saving…" : "Save"}
         </button>
       </div>
