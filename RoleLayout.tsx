@@ -1,10 +1,12 @@
 import { useState, type ComponentType } from "react";
-import { C, SERIF, SANS, LATO, SIZE, ROLE_LABEL, type Role, type LayoutMode } from "./constants";
+import { C, SERIF, SANS, LATO, SIZE, ROLE_LABEL, ROLES, type Role, type LayoutMode } from "./constants";
 import { AppLogo } from "./atoms";
 import { Modal } from "./Modal";
 import { ChangePassword } from "./ChangePassword";
 import { useSizeMode } from "./useSizeMode";
 import type { ChangeResult } from "./useAuth";
+
+type SwitchResult = { ok: boolean; needsPassword?: boolean; message?: string };
 
 // ─── ROLE LAYOUT ──────────────────────────────────────────
 // The shared frame every role page wears. It owns everything that is
@@ -33,18 +35,43 @@ export function RoleLayout({
   mode,
   onSignOut,
   changePassword,
+  switchRole,
 }: {
   role: Role;
   tabs: TabDef[];
   mode: LayoutMode;
   onSignOut: () => void;
   changePassword: (current: string, next: string) => Promise<ChangeResult>;
+  switchRole: (target: Role, password?: string) => Promise<SwitchResult>;
 }) {
   const sizeMode = useSizeMode();
   const sz = SIZE[sizeMode];
   const [menuOpen, setMenuOpen] = useState(false);
   const [pwOpen, setPwOpen] = useState(false);
   const [activeId, setActiveId] = useState(tabs[0]?.id);
+  // Mode-switch state: when a switch needs the password (e.g. after a reload
+  // cleared the in-memory cache), we open a tiny prompt for the target role.
+  const [switchTarget, setSwitchTarget] = useState<Role | null>(null);
+  const [switchPw, setSwitchPw] = useState("");
+  const [switchErr, setSwitchErr] = useState(false);
+  const [switching, setSwitching] = useState(false);
+
+  const doSwitch = async (target: Role, password?: string) => {
+    setSwitching(true);
+    setSwitchErr(false);
+    const res = await switchRole(target, password);
+    if (res.ok) {
+      // onAuthStateChange re-renders the app into the new mode; just close UI.
+      setSwitchTarget(null);
+      setSwitchPw("");
+      setMenuOpen(false);
+    } else if (res.needsPassword) {
+      setSwitchTarget(target);   // open the prompt
+    } else {
+      setSwitchErr(true);
+    }
+    setSwitching(false);
+  };
 
   const Active = (tabs.find((t) => t.id === activeId) ?? tabs[0])?.Component;
 
@@ -85,6 +112,24 @@ export function RoleLayout({
                     {ROLE_LABEL[role]} · Private
                   </p>
                 </div>
+                <div style={{ padding: "8px 16px 4px" }}>
+                  <p style={{ fontSize: 8, color: C.light, margin: 0, letterSpacing: "0.1em", textTransform: "uppercase" }}>Switch mode</p>
+                </div>
+                {ROLES.map((r) => {
+                  const isCurrent = r === role;
+                  return (
+                    <button
+                      key={r}
+                      disabled={isCurrent || switching}
+                      onClick={() => { if (!isCurrent) doSwitch(r); }}
+                      style={{ ...menuItemStyle, color: isCurrent ? C.light : C.black, cursor: isCurrent ? "default" : "pointer", justifyContent: "space-between" }}
+                    >
+                      <span>{ROLE_LABEL[r]}</span>
+                      {isCurrent && <span style={{ fontSize: 8, color: C.light, letterSpacing: "0.08em", textTransform: "uppercase" }}>current</span>}
+                    </button>
+                  );
+                })}
+                <div style={{ borderTop: `1px solid ${C.rule}` }} />
                 <button onClick={() => { setMenuOpen(false); setPwOpen(true); }} style={{ ...menuItemStyle, color: C.muted }}>
                   Change Password
                 </button>
@@ -143,6 +188,30 @@ export function RoleLayout({
       {/* ── Change Password (account menu) ── */}
       <Modal open={pwOpen} onClose={() => setPwOpen(false)} title="Account">
         <ChangePassword changePassword={changePassword} />
+      </Modal>
+
+      {/* ── Switch-mode password prompt (only when cache was cleared) ── */}
+      <Modal open={switchTarget !== null} onClose={() => { setSwitchTarget(null); setSwitchPw(""); setSwitchErr(false); }} title={`Switch to ${switchTarget ? ROLE_LABEL[switchTarget] : ""}`}>
+        <p style={{ fontFamily: SANS, fontSize: sz.bodyText, color: C.muted, margin: "0 0 12px", lineHeight: 1.5 }}>
+          Enter the password to switch mode.
+        </p>
+        <input
+          type="password"
+          placeholder="Password"
+          value={switchPw}
+          autoFocus
+          onChange={(e) => { setSwitchPw(e.target.value); setSwitchErr(false); }}
+          onKeyDown={(e) => e.key === "Enter" && switchTarget && switchPw && doSwitch(switchTarget, switchPw)}
+          style={{ width: "100%", height: sz.tapTarget, padding: sz.inputPad, border: `1px solid ${switchErr ? C.red : C.rule}`, background: C.bg, fontFamily: SANS, fontSize: sz.inputText, color: C.black, borderRadius: 2, outline: "none", boxSizing: "border-box", marginBottom: 8 }}
+        />
+        {switchErr && <p style={{ fontFamily: SANS, fontSize: sz.bodyText, color: C.red, margin: "0 0 8px" }}>Incorrect password</p>}
+        <button
+          onClick={() => switchTarget && switchPw && doSwitch(switchTarget, switchPw)}
+          disabled={switching || !switchPw}
+          style={{ width: "100%", height: sz.tapTarget, background: switching || !switchPw ? C.rule : C.black, color: switching || !switchPw ? C.muted : C.white, border: "none", borderRadius: 2, cursor: switching || !switchPw ? "default" : "pointer", fontFamily: SANS, fontSize: sz.primaryText, letterSpacing: "0.14em", textTransform: "uppercase" }}
+        >
+          {switching ? "…" : "Switch"}
+        </button>
       </Modal>
     </>
   );

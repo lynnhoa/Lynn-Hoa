@@ -23,6 +23,7 @@ type PageProps = {
   mode: LayoutMode;
   onSignOut: () => void;
   changePassword: (current: string, next: string) => Promise<ChangeResult>;
+  switchRole: (target: Role, password?: string) => Promise<{ ok: boolean; needsPassword?: boolean; message?: string }>;
 };
 
 const PAGES: Record<Role, (props: PageProps) => JSX.Element> = {
@@ -40,7 +41,7 @@ function Loading() {
 }
 
 export default function App() {
-  const { ready, role, signIn, signOut, changePassword } = useAuth();
+  const { ready, role, signIn, signOut, changePassword, switchRole } = useAuth();
   const mode = useLayoutMode();
 
   let body: JSX.Element;
@@ -50,7 +51,7 @@ export default function App() {
     body = <Auth signIn={signIn} mode={mode} />;
   } else {
     const Page = PAGES[role];
-    body = <Page mode={mode} onSignOut={signOut} changePassword={changePassword} />;
+    body = <Page mode={mode} onSignOut={signOut} changePassword={changePassword} switchRole={switchRole} />;
   }
 
   return <Shell>{body}</Shell>;

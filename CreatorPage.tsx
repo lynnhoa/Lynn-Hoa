@@ -1,5 +1,5 @@
 import { RoleLayout, type TabDef } from "./RoleLayout";
-import type { LayoutMode } from "./constants";
+import type { LayoutMode, Role } from "./constants";
 import type { ChangeResult } from "./useAuth";
 import { CreatorDashboard } from "./CreatorDashboard";
 import { CreatorClients } from "./CreatorClients";
@@ -18,6 +18,7 @@ export function CreatorPage(props: {
   mode: LayoutMode;
   onSignOut: () => void;
   changePassword: (current: string, next: string) => Promise<ChangeResult>;
+  switchRole: (target: Role, password?: string) => Promise<{ ok: boolean; needsPassword?: boolean; message?: string }>;
 }) {
   return <RoleLayout role="creator" tabs={TABS} {...props} />;
 }

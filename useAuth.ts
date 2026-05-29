@@ -45,7 +45,16 @@ export type AuthState = {
   // Changes the shared password for ALL THREE logins at once, then leaves you
   // signed in as the role you started from.
   changePassword: (currentPassword: string, newPassword: string) => Promise<ChangeResult>;
+  // Switch to another mode without logging out. Seamless if the password is
+  // cached from this session's login; otherwise asks for it once.
+  switchRole: (target: Role, password?: string) => Promise<{ ok: boolean; needsPassword?: boolean; message?: string }>;
 };
+
+// In-memory only (never localStorage) cache of the shared password, set when
+// the user logs in or switches with a password this session. Lets mode
+// switching be seamless. Cleared on sign-out and lost on full reload — after a
+// reload the first switch asks for the password once, then it's cached again.
+let pwCache: string | null = null;
 
 export function useAuth(): AuthState {
   const [ready, setReady] = useState(false);
@@ -83,6 +92,8 @@ export function useAuth(): AuthState {
       if (error) {
         return { ok: false, message: "Incorrect password" };
       }
+      // Cache the shared password in memory for seamless mode switching.
+      pwCache = password;
       // onAuthStateChange will set the role; no need to set it here.
       return { ok: true };
     },
@@ -90,9 +101,34 @@ export function useAuth(): AuthState {
   );
 
   const signOut = useCallback(async () => {
+    pwCache = null;
     await supabase.auth.signOut();
     setRole(null);
   }, []);
+
+  // ── Switch mode without logging out ──
+  // All three roles share one password. To land in another mode we sign into
+  // that role's login. If the password is cached from this session it's
+  // seamless; otherwise we report needsPassword so the UI can ask once.
+  const switchRole = useCallback(
+    async (target: Role, password?: string) => {
+      const pw = password ?? pwCache;
+      if (!pw) {
+        return { ok: false, needsPassword: true };
+      }
+      const { error } = await supabase.auth.signInWithPassword({
+        email: ROLE_EMAIL[target],
+        password: pw,
+      });
+      if (error) {
+        return { ok: false, message: "Incorrect password" };
+      }
+      pwCache = pw;
+      // onAuthStateChange updates role → app re-renders into the new mode.
+      return { ok: true };
+    },
+    []
+  );
 
   // ── Change the shared password across all three logins ──
   // Because the three roles are three separate Supabase users that happen to
@@ -162,11 +198,12 @@ export function useAuth(): AuthState {
         email: ROLE_EMAIL[startRole],
         password: newPassword,
       });
+      pwCache = newPassword;
 
       return { ok: true, message: "Password updated for all roles." };
     },
     [role]
   );
 
-  return { ready, role, signIn, signOut, changePassword };
+  return { ready, role, signIn, signOut, changePassword, switchRole };
 }

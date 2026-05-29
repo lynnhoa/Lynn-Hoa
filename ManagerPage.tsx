@@ -1,5 +1,5 @@
 import { RoleLayout, type TabDef } from "./RoleLayout";
-import type { LayoutMode } from "./constants";
+import type { LayoutMode, Role } from "./constants";
 import type { ChangeResult } from "./useAuth";
 import { ManagerDashboard } from "./ManagerDashboard";
 import { ManagerClients } from "./ManagerClients";
@@ -19,6 +19,7 @@ export function ManagerPage(props: {
   mode: LayoutMode;
   onSignOut: () => void;
   changePassword: (current: string, next: string) => Promise<ChangeResult>;
+  switchRole: (target: Role, password?: string) => Promise<{ ok: boolean; needsPassword?: boolean; message?: string }>;
 }) {
   return <RoleLayout role="manager" tabs={TABS} {...props} />;
 }
