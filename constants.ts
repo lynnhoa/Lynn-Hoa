@@ -139,7 +139,7 @@ export const SIZE = {
     avatar: 30,
     contentPad: "40px 20px",
     // Tab row (the centered second level beneath the logo). Uppercase Lato.
-    tabText: 12,
+    tabText: 10,
     tabRowHeight: 50,
     tabGap: 30,
   },
@@ -166,9 +166,9 @@ export const SIZE = {
     navHeight: 56,
     avatar: 36,
     contentPad: "32px 20px",
-    // Tab row — bigger on phones / installed PWA.
-    tabText: 14,
+    // Tab row — distributed full-width within side padding on phones / PWA.
+    tabText: 11,
     tabRowHeight: 52,
-    tabGap: 22,
+    tabGap: 8,
   },
 } as const;

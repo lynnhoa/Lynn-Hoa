@@ -101,8 +101,10 @@ export function RoleLayout({
           <div />
         </div>
 
-        {/* Row 2 — centered Playfair tab row */}
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: sz.tabGap, height: sz.tabRowHeight, borderTop: `1px solid ${C.rule}`, padding: "0 16px" }}>
+        {/* Row 2 — Lato tab row: centered on desktop, distributed within
+            side padding on mobile so all tabs stay on one line and never
+            run to the screen edge */}
+        <div style={{ display: "flex", justifyContent: sizeMode === "mobile" ? "space-between" : "center", alignItems: "center", gap: sz.tabGap, height: sz.tabRowHeight, borderTop: `1px solid ${C.rule}`, padding: "0 18px", boxSizing: "border-box" }}>
           {tabs.map((t) => {
             const active = t.id === activeId;
             return (
@@ -118,9 +120,11 @@ export function RoleLayout({
                   cursor: "pointer",
                   fontFamily: LATO,
                   fontSize: sz.tabText,
-                  letterSpacing: "0.12em",
+                  letterSpacing: sizeMode === "mobile" ? "0.07em" : "0.12em",
                   textTransform: "uppercase",
-                  padding: "0 2px",
+                  whiteSpace: "nowrap",
+                  flexShrink: 0,
+                  padding: 0,
                   transition: "color 0.15s ease",
                 }}
               >
