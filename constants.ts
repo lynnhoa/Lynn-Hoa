@@ -10,11 +10,22 @@ export const C = {
 
 export const SERIF = "'Georgia','Times New Roman',serif";
 export const SANS = "'Helvetica Neue',Arial,sans-serif";
+// Display face for the wordmark and the tab labels — loaded in index.html.
+export const PLAYFAIR = "'Playfair Display',Georgia,serif";
 
 // The three roles. Login is shared (single password); the role is just the
 // view you land on. This is intentional — it's a two-person studio tool.
 export const ROLES = ["scout", "manager", "creator"] as const;
 export type Role = (typeof ROLES)[number];
+
+// Display label for each role. Single source of truth — imported wherever a
+// role needs to be shown (login buttons, account menu, etc.) so the mapping
+// is never copy-pasted.
+export const ROLE_LABEL: Record<Role, string> = {
+  scout: "Scout",
+  manager: "Manager",
+  creator: "Creator",
+};
 
 // ─── LAYOUT MODE ──────────────────────────────────────────
 // The app runs in two layout modes:
@@ -125,6 +136,11 @@ export const SIZE = {
     navHeight: 56,
     avatar: 30,
     contentPad: "40px 20px",
+    // Tab row (the centered second level beneath the logo). Casual, readable
+    // Playfair labels — deliberately not the tiny 9px uppercase of the old nav.
+    tabText: 14,
+    tabRowHeight: 50,
+    tabGap: 30,
   },
   mobile: {
     // Auth / login — the card fills the screen width (with side gutters) so
@@ -149,5 +165,9 @@ export const SIZE = {
     navHeight: 56,
     avatar: 36,
     contentPad: "32px 20px",
+    // Tab row — bigger and roomier on phones / installed PWA.
+    tabText: 16,
+    tabRowHeight: 52,
+    tabGap: 22,
   },
 } as const;

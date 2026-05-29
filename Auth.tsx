@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { C, SANS, ROLES, SIZE, type Role, type LayoutMode } from "./constants";
+import { C, SANS, ROLES, SIZE, ROLE_LABEL, type Role, type LayoutMode } from "./constants";
 import { AppLogo } from "./atoms";
 import { useSizeMode } from "./useSizeMode";
 
@@ -8,11 +8,6 @@ import { useSizeMode } from "./useSizeMode";
 // from the SIZE table (desktop = refined/compact, mobile = comfortable with
 // big tap targets and 16px inputs). Desktop is unchanged from the original.
 
-const ROLE_LABEL: Record<Role, string> = {
-  scout: "Scout",
-  manager: "Manager",
-  creator: "Creator",
-};
 
 export function Auth({
   signIn,
