@@ -218,3 +218,23 @@ export const TYPE = {
     areaPad:  "12px 14px",
   },
 } as const;
+
+// ─── CONTENT WIDTH ────────────────────────────────────────
+// The rule for how wide a screen's content area is:
+//   • Single-column content (forms, text, one stacked list) is capped at
+//     CONTENT_MAX so lines don't run too wide to read comfortably, and it
+//     sits centered.
+//   • Multi-column content (two+ columns side by side, dashboards, split
+//     layouts) goes FULL WIDTH — it has enough internal structure to fill
+//     the screen without feeling empty.
+//
+// Usage:
+//   const w = contentWidth(columns);   // columns = how many the screen uses
+//   <div style={{ maxWidth: w, margin: "0 auto" }}>
+export const CONTENT_MAX = 840;
+
+// Returns the max-width for a content area given how many columns it lays out.
+// 1 column → capped & centered at CONTENT_MAX. 2+ columns → full width.
+export function contentWidth(columns: number): number | string {
+  return columns >= 2 ? "100%" : CONTENT_MAX;
+}
