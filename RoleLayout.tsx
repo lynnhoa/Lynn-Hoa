@@ -64,8 +64,9 @@ export function RoleLayout({
   const [switchPw, setSwitchPw] = useState("");
   const [switchErr, setSwitchErr] = useState(false);
   const [switching, setSwitching] = useState(false);
-  // Which menu-extra modal (Creator Profile / Service Catalog) is open, by index.
-  const [extraOpen, setExtraOpen] = useState<number | null>(null);
+  // Which menu-extra is showing as a full overlay screen (Creator Profile /
+  // Service Catalog), by index. null = showing the normal tabs.
+  const [overlayIndex, setOverlayIndex] = useState<number | null>(null);
 
   const doSwitch = async (target: Role, password?: string) => {
     setSwitching(true);
@@ -144,7 +145,7 @@ export function RoleLayout({
                 {menuExtras.map((ex, i) => (
                   <button
                     key={ex.label}
-                    onClick={() => { setMenuOpen(false); setExtraOpen(i); }}
+                    onClick={() => { setMenuOpen(false); setOverlayIndex(i); }}
                     style={{ ...menuItemStyle, color: C.muted }}
                   >
                     {ex.label}
@@ -167,61 +168,67 @@ export function RoleLayout({
           <div />
         </div>
 
-        {/* Row 2 — Lato tab row: centered on desktop, distributed within
-            side padding on mobile so all tabs stay on one line and never
-            run to the screen edge */}
-        <div style={{ display: "flex", justifyContent: sizeMode === "mobile" ? "space-between" : "center", alignItems: "center", gap: sz.tabGap, height: sz.tabRowHeight, borderTop: `1px solid ${C.rule}`, padding: "0 18px", boxSizing: "border-box" }}>
-          {tabs.map((t) => {
-            const active = t.id === activeId;
-            return (
-              <button
-                key={t.id}
-                onClick={() => setActiveId(t.id)}
-                style={{
-                  height: "100%",
-                  background: "none",
-                  border: "none",
-                  borderBottom: active ? `2px solid ${C.black}` : "2px solid transparent",
-                  color: active ? C.black : C.light,
-                  cursor: "pointer",
-                  fontFamily: LATO,
-                  fontSize: sz.tabText,
-                  letterSpacing: sizeMode === "mobile" ? "0.07em" : "0.12em",
-                  textTransform: "uppercase",
-                  whiteSpace: "nowrap",
-                  flexShrink: 0,
-                  padding: 0,
-                  transition: "color 0.15s ease",
-                }}
-              >
-                {t.label}
-              </button>
-            );
-          })}
-        </div>
+        {/* Row 2 — either the tab bar, or (in overlay mode) a back arrow +
+            centered screen title. Row 1 (logo) is unchanged either way. */}
+        {overlayIndex !== null ? (
+          <div style={{ display: "grid", gridTemplateColumns: "1fr auto 1fr", alignItems: "center", height: sz.tabRowHeight, borderTop: `1px solid ${C.rule}`, padding: "0 18px", boxSizing: "border-box" }}>
+            <button
+              onClick={() => setOverlayIndex(null)}
+              aria-label="Back"
+              style={{ display: "flex", alignItems: "center", gap: 5, background: "none", border: "none", cursor: "pointer", fontFamily: LATO, fontSize: sz.tabText, letterSpacing: "0.08em", textTransform: "uppercase", color: C.muted, padding: 0, justifySelf: "start" }}
+            >
+              <span style={{ fontSize: 18, lineHeight: 1, marginTop: -2 }}>‹</span>
+              {sizeMode === "mobile" ? "" : "Back"}
+            </button>
+            <span style={{ fontFamily: LATO, fontSize: sz.tabText, letterSpacing: "0.12em", textTransform: "uppercase", color: C.black, whiteSpace: "nowrap" }}>
+              {menuExtras[overlayIndex]?.label}
+            </span>
+            <div />
+          </div>
+        ) : (
+          <div style={{ display: "flex", justifyContent: sizeMode === "mobile" ? "space-between" : "center", alignItems: "center", gap: sz.tabGap, height: sz.tabRowHeight, borderTop: `1px solid ${C.rule}`, padding: "0 18px", boxSizing: "border-box" }}>
+            {tabs.map((t) => {
+              const active = t.id === activeId;
+              return (
+                <button
+                  key={t.id}
+                  onClick={() => setActiveId(t.id)}
+                  style={{
+                    height: "100%",
+                    background: "none",
+                    border: "none",
+                    borderBottom: active ? `2px solid ${C.black}` : "2px solid transparent",
+                    color: active ? C.black : C.light,
+                    cursor: "pointer",
+                    fontFamily: LATO,
+                    fontSize: sz.tabText,
+                    letterSpacing: sizeMode === "mobile" ? "0.07em" : "0.12em",
+                    textTransform: "uppercase",
+                    whiteSpace: "nowrap",
+                    flexShrink: 0,
+                    padding: 0,
+                    transition: "color 0.15s ease",
+                  }}
+                >
+                  {t.label}
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
-      {/* ── CONTENT: the active tab ── */}
+      {/* ── CONTENT: overlay screen if active, else the active tab ── */}
       <div style={{ flex: 1, overflowY: mode === "desktop" ? "auto" : "hidden", display: "flex", flexDirection: "column", boxSizing: "border-box" }}>
-        {Active ? <Active /> : null}
+        {overlayIndex !== null
+          ? (() => { const Ov = menuExtras[overlayIndex].Component; return <Ov />; })()
+          : (Active ? <Active /> : null)}
       </div>
 
       {/* ── Change Password (account menu) ── */}
       <Modal open={pwOpen} onClose={() => setPwOpen(false)} title="Account">
         <ChangePassword changePassword={changePassword} />
       </Modal>
-
-      {/* ── Menu extras (Manager: Creator Profile / Service Catalog) ── */}
-      {menuExtras.map((ex, i) => {
-        const ExtraComponent = ex.Component;
-        return (
-          <Modal key={ex.label} open={extraOpen === i} onClose={() => setExtraOpen(null)} title={ex.label}>
-            <div style={{ minHeight: 220, display: "flex", flexDirection: "column" }}>
-              <ExtraComponent />
-            </div>
-          </Modal>
-        );
-      })}
 
       {/* ── Switch-mode password prompt (only when cache was cleared) ── */}
       <Modal open={switchTarget !== null} onClose={() => { setSwitchTarget(null); setSwitchPw(""); setSwitchErr(false); }} title={`Switch to ${switchTarget ? ROLE_LABEL[switchTarget] : ""}`}>
