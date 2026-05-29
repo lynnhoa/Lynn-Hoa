@@ -219,7 +219,7 @@ export function RoleLayout({
       </div>
 
       {/* ── CONTENT: overlay screen if active, else the active tab ── */}
-      <div style={{ flex: 1, overflowY: mode === "desktop" ? "auto" : "hidden", display: "flex", flexDirection: "column", boxSizing: "border-box" }}>
+      <div style={{ flex: 1, minHeight: 0, overflowY: overlayIndex !== null ? "hidden" : (mode === "desktop" ? "auto" : "hidden"), display: "flex", flexDirection: "column", boxSizing: "border-box" }}>
         {overlayIndex !== null
           ? (() => { const Ov = menuExtras[overlayIndex].Component; return <Ov />; })()
           : (Active ? <Active /> : null)}
