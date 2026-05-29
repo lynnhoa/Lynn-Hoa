@@ -10,8 +10,10 @@ export const C = {
 
 export const SERIF = "'Georgia','Times New Roman',serif";
 export const SANS = "'Helvetica Neue',Arial,sans-serif";
-// Display face for the wordmark and the tab labels — loaded in index.html.
+// Display face for the wordmark — loaded in index.html.
 export const PLAYFAIR = "'Playfair Display',Georgia,serif";
+// Tab labels — loaded in index.html.
+export const LATO = "'Lato','Helvetica Neue',Arial,sans-serif";
 
 // The three roles. Login is shared (single password); the role is just the
 // view you land on. This is intentional — it's a two-person studio tool.
@@ -136,9 +138,8 @@ export const SIZE = {
     navHeight: 56,
     avatar: 30,
     contentPad: "40px 20px",
-    // Tab row (the centered second level beneath the logo). Casual, readable
-    // Playfair labels — deliberately not the tiny 9px uppercase of the old nav.
-    tabText: 14,
+    // Tab row (the centered second level beneath the logo). Uppercase Lato.
+    tabText: 12,
     tabRowHeight: 50,
     tabGap: 30,
   },
@@ -165,8 +166,8 @@ export const SIZE = {
     navHeight: 56,
     avatar: 36,
     contentPad: "32px 20px",
-    // Tab row — bigger and roomier on phones / installed PWA.
-    tabText: 16,
+    // Tab row — bigger on phones / installed PWA.
+    tabText: 14,
     tabRowHeight: 52,
     tabGap: 22,
   },

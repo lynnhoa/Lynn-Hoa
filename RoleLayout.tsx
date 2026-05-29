@@ -1,5 +1,5 @@
 import { useState, type ComponentType } from "react";
-import { C, SERIF, SANS, PLAYFAIR, SIZE, ROLE_LABEL, type Role, type LayoutMode } from "./constants";
+import { C, SERIF, SANS, LATO, SIZE, ROLE_LABEL, type Role, type LayoutMode } from "./constants";
 import { AppLogo } from "./atoms";
 import { Modal } from "./Modal";
 import { ChangePassword } from "./ChangePassword";
@@ -96,7 +96,7 @@ export function RoleLayout({
             )}
           </div>
           <div style={{ textAlign: "center" }}>
-            <AppLogo size="web" wordmarkSize={sizeMode === "mobile" ? 22 : 24} studioSize={7} />
+            <AppLogo size="web" wordmarkSize={sizeMode === "mobile" ? 26 : 28} studioSize={sizeMode === "mobile" ? 7.5 : 8} />
           </div>
           <div />
         </div>
@@ -116,9 +116,10 @@ export function RoleLayout({
                   borderBottom: active ? `2px solid ${C.black}` : "2px solid transparent",
                   color: active ? C.black : C.light,
                   cursor: "pointer",
-                  fontFamily: PLAYFAIR,
+                  fontFamily: LATO,
                   fontSize: sz.tabText,
-                  letterSpacing: "0.01em",
+                  letterSpacing: "0.12em",
+                  textTransform: "uppercase",
                   padding: "0 2px",
                   transition: "color 0.15s ease",
                 }}
